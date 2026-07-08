@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project demonstrates an end-to-end Business Intelligence workflow using Python, PostgreSQL, SQL, and Power BI. The objective is to transform raw e-commerce event data into meaningful business insights through data cleaning, database design, SQL analysis, KPI reporting, and interactive dashboards.
+This project demonstrates an end-to-end Business Intelligence workflow using Python, PostgreSQL, SQL, and Power BI. The objective is to transform raw e-commerce event data into meaningful business insights through data extraction, cleaning, validation, database design, SQL analysis, KPI reporting, and interactive dashboards.
 
 The project is being developed as a portfolio project to strengthen practical skills in SQL, Business Intelligence, and Data Analytics.
 
@@ -16,7 +16,7 @@ An e-commerce company wants to better understand customer behavior, product perf
 
 ## Objectives
 
-- Build a data cleaning and transformation pipeline using Python
+- Build a data extraction, cleaning, and validation pipeline using Python
 - Design a relational database in PostgreSQL
 - Analyze business data using SQL
 - Create interactive dashboards in Power BI
@@ -43,50 +43,40 @@ An e-commerce company wants to better understand customer behavior, product perf
 
 ```text
 ecommerce-sql-bi-platform/
-│
-├── data/
-│   ├── raw/
-│   ├── processed/
-│   └── validation/
-│
-├── notebooks/
-│   ├── 01_data_understanding.ipynb
-│   ├── 02_data_cleaning.ipynb
-│   └── 03_eda.ipynb
-│
-├── sql/
-│   ├── ddl/
-│   ├── dml/
-│   ├── analytics/
-│   └── views/
-│
-├── src/
-│   ├── extraction/
-│   ├── cleaning/
-│   ├── validation/
-│   ├── transformation/
-│   ├── loading/
-│   └── automation/
-│
-├── dashboards/
-│   ├── powerbi/
-│   └── exports/
-│
-├── reports/
-│
-├── logs/
-│
-├── requirements.txt
-├── README.md
-├── .gitignore
-└── main.py
+|
+|-- data/
+|   |-- raw/
+|   |-- processed/
+|   `-- validation/
+|
+|-- src/
+|   |-- extraction/
+|   |-- cleaning/
+|   |-- validation/
+|   `-- automation/
+|
+|-- sql/
+|-- notebooks/
+|-- dashboards/
+|-- reports/
+|-- logs/
+|
+|-- requirements.txt
+|-- README.md
+`-- main.py
 ```
 
 ---
 
 ## Dataset
 
-This project uses the **eCommerce Behavior Data from Multi Category Store** dataset available on Kaggle.
+This project uses the **eCommerce Behavior Data from Multi Category Store** dataset available on Kaggle:
+
+```text
+https://www.kaggle.com/datasets/mkechinov/ecommerce-behavior-data-from-multi-category-store
+```
+
+For this project, the **October 2019** dataset file is used.
 
 The raw dataset is not included in this repository because it exceeds GitHub's file size limits.
 
@@ -98,13 +88,70 @@ data/raw/2019-Oct.csv
 
 ---
 
+## Pipeline Steps
+
+### 1. Create Sample Dataset
+
+The raw CSV file is large, so the extraction script reads it in chunks and creates a smaller daily sample.
+
+```bash
+python src/extraction/create_sample_dataset.py
+```
+
+Output:
+
+```text
+data/processed/ecommerce_sample.csv
+```
+
+### 2. Clean Sample Dataset
+
+The cleaning script removes duplicate rows, handles invalid timestamps, standardizes text columns, and preserves useful missing values for analysis.
+
+```bash
+python src/cleaning/clean_ecommerce_data.py
+```
+
+Output:
+
+```text
+data/processed/ecommerce_cleaned.csv
+```
+
+### 3. Validate Cleaned Dataset
+
+The validation script checks row counts, missing values, duplicate rows, data types, event types, records by date, and negative prices.
+
+```bash
+python src/validation/validate_ecommerce_data.py
+```
+
+Output:
+
+```text
+data/validation/validation_report.txt
+```
+
+---
+
+## Output Files
+
+| File | Description |
+|------|-------------|
+| `data/processed/ecommerce_sample.csv` | Sample dataset created from the large raw CSV |
+| `data/processed/ecommerce_cleaned.csv` | Cleaned ecommerce dataset ready for analysis |
+| `data/validation/validation_report.txt` | Text report containing validation checks |
+
+---
+
 ## Current Progress
 
 - [x] Project setup
 - [x] Development environment
 - [x] Repository initialization
-- [ ] Data understanding
-- [ ] Data cleaning
+- [x] Sample dataset extraction
+- [x] Data cleaning
+- [x] Data validation
 - [ ] PostgreSQL database design
 - [ ] SQL analytics
 - [ ] Power BI dashboards

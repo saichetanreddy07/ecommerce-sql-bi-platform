@@ -1,0 +1,74 @@
+Ecommerce Data Validation Report
+===================================
+
+Dataset Shape
+Total rows: 309,967
+Total columns: 10
+
+Missing Values by Column
+event_time: 0
+event_type: 0
+product_id: 0
+category_id: 0
+category_code: 101,542
+brand: 45,841
+price: 0
+user_id: 0
+user_session: 0
+event_date: 0
+
+Duplicate Rows
+Duplicate rows found: 0
+
+Column Data Types
+event_time: object
+event_type: object
+product_id: int64
+category_id: int64
+category_code: object
+brand: object
+price: float64
+user_id: int64
+user_session: object
+event_date: object
+
+Unique Event Types
+cart
+purchase
+view
+
+Records by Event Date
+2019-10-01: 10,000
+2019-10-02: 9,998
+2019-10-03: 10,000
+2019-10-04: 9,998
+2019-10-05: 9,996
+2019-10-06: 10,000
+2019-10-07: 10,000
+2019-10-08: 9,999
+2019-10-09: 10,000
+2019-10-10: 9,997
+2019-10-11: 10,000
+2019-10-12: 9,999
+2019-10-13: 10,000
+2019-10-14: 9,998
+2019-10-15: 9,998
+2019-10-16: 9,998
+2019-10-17: 10,000
+2019-10-18: 9,997
+2019-10-19: 9,998
+2019-10-20: 10,000
+2019-10-21: 9,997
+2019-10-22: 10,000
+2019-10-23: 9,998
+2019-10-24: 9,999
+2019-10-25: 10,000
+2019-10-26: 9,999
+2019-10-27: 10,000
+2019-10-28: 10,000
+2019-10-29: 9,998
+2019-10-30: 10,000
+2019-10-31: 10,000
+
+Negative Price Check
+Rows with negative prices: 0
