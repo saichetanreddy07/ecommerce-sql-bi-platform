@@ -2,85 +2,131 @@
 
 ## Overview
 
-This project demonstrates an end-to-end Business Intelligence workflow using Python, PostgreSQL, SQL, and Power BI. The objective is to transform raw e-commerce event data into meaningful business insights through data extraction, cleaning, validation, database design, SQL analysis, KPI reporting, and interactive dashboards.
+The Enterprise SQL Analytics & Business Intelligence Platform is an end-to-end Business Intelligence project that transforms raw e-commerce event data into actionable business insights.
 
-The project is being developed as a portfolio project to strengthen practical skills in SQL, Business Intelligence, and Data Analytics.
+The project demonstrates a complete BI workflow, including:
 
----
+- Data extraction from a large e-commerce dataset
+- Data cleaning and validation using Python
+- ETL pipeline for loading data into PostgreSQL
+- Relational database design and normalization
+- Business analytics using PostgreSQL SQL
+- Interactive dashboard development using Power BI
+- Documentation and reporting
 
-## Business Problem
-
-An e-commerce company wants to better understand customer behavior, product performance, and sales trends. The Business Intelligence team has been tasked with building a reporting platform that helps stakeholders monitor key metrics and make data-driven decisions.
-
----
-
-## Objectives
-
-- Build a data extraction, cleaning, and validation pipeline using Python
-- Design a relational database in PostgreSQL
-- Analyze business data using SQL
-- Create interactive dashboards in Power BI
-- Generate business insights and recommendations
+The primary goal of this project is to simulate a real-world Business Intelligence solution while strengthening practical skills in SQL, PostgreSQL, Python, ETL, and Power BI.
 
 ---
 
-## Tech Stack
+# Business Problem
+
+An e-commerce company wants to better understand customer behavior, product performance, and sales trends. The Business Intelligence team has been tasked with building a reporting platform that enables stakeholders to monitor key metrics and make data-driven decisions.
+
+---
+
+# Objectives
+
+- Build a scalable ETL pipeline using Python
+- Clean and validate raw e-commerce data
+- Design a normalized PostgreSQL database
+- Load transformed data into PostgreSQL
+- Answer business questions using SQL
+- Create interactive Power BI dashboards
+- Generate business insights for decision-making
+
+---
+
+# Architecture
+
+```text
+                Kaggle Dataset
+                      │
+                      ▼
+          Python ETL Pipeline
+   (Extraction → Cleaning → Validation)
+                      │
+                      ▼
+          PostgreSQL Database
+        (Normalized Relational Schema)
+                      │
+                      ▼
+            SQL Analytics Layer
+      (Business & Analytical Queries)
+                      │
+                      ▼
+          Power BI Dashboards
+                      │
+                      ▼
+            Business Insights
+```
+
+---
+
+# Tech Stack
 
 | Category | Technology |
 |----------|------------|
 | Programming Language | Python |
 | Database | PostgreSQL |
 | Query Language | SQL |
-| Data Analysis | Pandas, NumPy |
+| Data Processing | Pandas, NumPy |
+| Database Connectivity | psycopg2 |
+| Environment Variables | python-dotenv |
 | Visualization | Power BI |
 | Development Environment | Visual Studio Code |
+| Database Extension | SQLTools |
 | Version Control | Git, GitHub |
-| Notebook | Jupyter Notebook |
 
 ---
 
-## Project Structure
+# Project Structure
 
 ```text
 ecommerce-sql-bi-platform/
-|
-|-- data/
-|   |-- raw/
-|   |-- processed/
-|   `-- validation/
-|
-|-- src/
-|   |-- extraction/
-|   |-- cleaning/
-|   |-- validation/
-|   `-- automation/
-|
-|-- sql/
-|-- notebooks/
-|-- dashboards/
-|-- reports/
-|-- logs/
-|
-|-- requirements.txt
-|-- README.md
-`-- main.py
+
+├── data/
+│   ├── raw/
+│   ├── processed/
+│   └── validation/
+│
+├── docs/
+│   └── ai_context.md
+│
+├── src/
+│   ├── extraction/
+│   ├── cleaning/
+│   ├── validation/
+│   ├── loading/
+│   └── automation/
+│
+├── sql/
+│   ├── ddl/
+│   └── analytics/
+│
+├── dashboards/
+├── reports/
+├── notebooks/
+├── logs/
+│
+├── requirements.txt
+├── README.md
+└── .env.example
 ```
 
 ---
 
-## Dataset
+# Dataset
 
-This project uses the **eCommerce Behavior Data from Multi Category Store** dataset available on Kaggle:
+This project uses the **eCommerce Behavior Data from Multi Category Store** dataset available on Kaggle.
 
-```text
+Dataset:
 https://www.kaggle.com/datasets/mkechinov/ecommerce-behavior-data-from-multi-category-store
-```
 
-For this project, the **October 2019** dataset file is used.
+Only the **October 2019** dataset is used for this project.
 
-The raw dataset is not included in this repository because it exceeds GitHub's file size limits.
+The raw dataset is not included in this repository because it exceeds GitHub's file size limitations.
 
-Place the dataset in the following directory before running the project:
+Place the dataset here before running the project:
 
 ```text
 data/raw/2019-Oct.csv
@@ -88,84 +134,285 @@ data/raw/2019-Oct.csv
 
 ---
 
-## Pipeline Steps
+# Database Schema
 
-### 1. Create Sample Dataset
+The project uses a normalized PostgreSQL database consisting of four tables.
 
-The raw CSV file is large, so the extraction script reads it in chunks and creates a smaller daily sample.
+| Table | Description |
+|--------|-------------|
+| categories | Stores unique product categories |
+| products | Stores product information and category mapping |
+| users | Stores unique customer information |
+| events | Stores customer interactions including views, carts, and purchases |
 
-```bash
-python src/extraction/create_sample_dataset.py
+### Relationships
+
+```text
+Categories
+      │
+      │ 1
+      ▼
+Products
+      │
+      │ 1
+      ▼
+Events
+      ▲
+      │
+Users
 ```
 
-Output:
+---
+
+# ETL Pipeline
+
+## 1. Data Extraction
+
+- Reads the large CSV file in chunks
+- Creates a representative sample dataset
+- Reduces memory usage while preserving data distribution
+
+Output
 
 ```text
 data/processed/ecommerce_sample.csv
 ```
 
-### 2. Clean Sample Dataset
-
-The cleaning script removes duplicate rows, handles invalid timestamps, standardizes text columns, and preserves useful missing values for analysis.
+Run
 
 ```bash
-python src/cleaning/clean_ecommerce_data.py
+python src/extraction/create_sample_dataset.py
 ```
 
-Output:
+---
+
+## 2. Data Cleaning
+
+The transformation stage performs:
+
+- Duplicate removal
+- Invalid timestamp removal
+- Text standardization
+- Lowercase conversion
+- Whitespace removal
+- Business-rule preservation for missing values
+
+Output
 
 ```text
 data/processed/ecommerce_cleaned.csv
 ```
 
-### 3. Validate Cleaned Dataset
-
-The validation script checks row counts, missing values, duplicate rows, data types, event types, records by date, and negative prices.
+Run
 
 ```bash
-python src/validation/validate_ecommerce_data.py
+python src/cleaning/clean_ecommerce_data.py
 ```
 
-Output:
+---
+
+## 3. Data Validation
+
+Validation includes:
+
+- Row count verification
+- Duplicate detection
+- Missing value analysis
+- Data type verification
+- Event type validation
+- Date range validation
+- Negative price detection
+
+Output
 
 ```text
 data/validation/validation_report.txt
 ```
 
----
+Run
 
-## Output Files
-
-| File | Description |
-|------|-------------|
-| `data/processed/ecommerce_sample.csv` | Sample dataset created from the large raw CSV |
-| `data/processed/ecommerce_cleaned.csv` | Cleaned ecommerce dataset ready for analysis |
-| `data/validation/validation_report.txt` | Text report containing validation checks |
+```bash
+python src/validation/validate_ecommerce_data.py
+```
 
 ---
 
-## Current Progress
+## 4. Data Loading
 
-- [x] Project setup
-- [x] Development environment
-- [x] Repository initialization
-- [x] Sample dataset extraction
-- [x] Data cleaning
-- [x] Data validation
-- [ ] PostgreSQL database design
-- [ ] SQL analytics
-- [ ] Power BI dashboards
-- [ ] Business insights
-- [ ] Documentation
+The cleaned dataset is loaded into PostgreSQL using a modular ETL pipeline.
+
+Loading order:
+
+```text
+Categories
+      │
+      ▼
+Products
+      │
+      ▼
+Users
+      │
+      ▼
+Events
+```
+
+This loading order preserves referential integrity and satisfies all foreign key constraints.
 
 ---
 
-## Repository Status
+# SQL Analytics
 
-This project is currently under development and will be updated as each milestone is completed.
+The project contains approximately **40 business-focused SQL queries** organized into multiple analytical domains.
+
+### Sales Analytics
+
+- Total Revenue
+- Revenue by Category
+- Revenue Trends
+- Top Brands
+- Top Products
+- Average Purchase Value
+
+### Customer Analytics
+
+- Customer Spending
+- Most Active Users
+- Repeat Customers
+- Customer Purchase Behaviour
+
+### Product Analytics
+
+- Product Performance
+- Brand Performance
+- Category Analysis
+
+### Conversion Analytics
+
+- View → Cart → Purchase Funnel
+- Conversion Rate
+- Cart Abandonment
+
+### Time Analytics
+
+- Revenue by Hour
+- Revenue by Week
+- Peak Shopping Hours
+- Peak Shopping Days
+
+### Advanced SQL
+
+Advanced PostgreSQL concepts demonstrated:
+
+- Common Table Expressions (CTEs)
+- Window Functions
+- RANK()
+- DENSE_RANK()
+- ROW_NUMBER()
+- LAG()
+- Running Totals
+- Moving Averages
 
 ---
 
-## License
+# Power BI Dashboard
 
-This project is intended for educational and portfolio purposes.
+The Power BI dashboard provides interactive business insights through:
+
+- Executive Overview
+- Sales Dashboard
+- Customer Analytics
+- Product Analytics
+- Conversion Funnel
+- Time-based Trends
+
+> Dashboard screenshots will be added after completion.
+
+---
+
+# Key Features
+
+- End-to-end ETL pipeline
+- PostgreSQL relational database
+- Normalized schema design
+- Business-driven SQL analysis
+- Advanced PostgreSQL queries
+- Interactive Power BI dashboards
+- Modular Python codebase
+- Production-inspired project structure
+
+---
+
+# Skills Demonstrated
+
+### Python
+
+- ETL Pipelines
+- Data Cleaning
+- Data Validation
+- File Processing
+- Pandas
+
+### SQL
+
+- Joins
+- Aggregations
+- GROUP BY
+- HAVING
+- CASE
+- CTEs
+- Window Functions
+- Ranking Functions
+
+### PostgreSQL
+
+- Database Design
+- Normalization
+- Foreign Keys
+- Constraints
+- Query Optimization
+
+### Business Intelligence
+
+- KPI Design
+- Business Analytics
+- Dashboard Development
+- Reporting
+- Data Visualization
+
+---
+
+# Current Progress
+
+- ✅ Project Setup
+- ✅ Data Extraction
+- ✅ Data Cleaning
+- ✅ Data Validation
+- ✅ PostgreSQL Database Design
+- ✅ ETL Data Loading
+- ✅ SQL Analytics
+- ⏳ Power BI Dashboard
+- ⏳ Business Insights Report
+- ⏳ Final Documentation
+
+---
+
+# Future Improvements
+
+- Automate ETL scheduling
+- Add incremental data loading
+- Create database indexes for performance optimization
+- Deploy dashboards online
+- Build automated reporting pipeline
+- Add data quality monitoring
+
+---
+
+# Repository Status
+
+This project is actively being developed. Additional Power BI dashboards, documentation, and deployment steps will be added in future updates.
+
+---
+
+# License
+
+This project is intended for educational, learning, and portfolio purposes.
