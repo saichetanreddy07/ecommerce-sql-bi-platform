@@ -5,7 +5,7 @@ import pandas as pd
 
 BASE_DIR = Path(__file__).resolve().parents[2]
 
-INPUT_FILE_PATH = BASE_DIR / "data/processed/ecommerce_sample.csv"
+INPUT_FILE_PATH = BASE_DIR / "data/sample/ecommerce_sample.csv"
 OUTPUT_FILE_PATH = BASE_DIR / "data/processed/ecommerce_cleaned.csv"
 
 TEXT_COLUMNS = ["brand", "category_code", "event_type"]

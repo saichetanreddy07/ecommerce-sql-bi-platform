@@ -31,9 +31,14 @@ ecommerce-sql-bi-platform/
 
 ├── data/
 │   ├── raw/
-│   └── processed/
+│   ├── processed/
+│   ├── sample/
+│   └── validation/
 │
 ├── docs/
+│   ├── architecture.md
+│   ├── database_design.md
+│   ├── data_dictionary.md
 │   └── ai_context.md
 │
 ├── sql/
@@ -43,15 +48,20 @@ ecommerce-sql-bi-platform/
 │   └── views/
 │
 ├── src/
-│   ├── automation/
+│   ├── config/
 │   ├── extraction/
+│   ├── loading/
 │   ├── cleaning/
 │   ├── validation/
-│   └── loading/
+│   └── utils/
 │
 ├── dashboards/
+├── images/
+├── notebooks/
 ├── reports/
-├── .env
+├── tests/
+├── .github/workflows/
+├── .env.example
 ├── .gitignore
 ├── README.md
 └── requirements.txt
@@ -113,21 +123,15 @@ Load into PostgreSQL
 
 # SQL Analytics Folder
 
-01_sales_analysis.sql
+- `00_session_query.sql`
+- `01_sales_analysis.sql`
+- `02_customer_analysis.sql`
+- `03_product_analysis.sql`
+- `04_conversion_analysis.sql`
+- `05_time_analysis.sql`
+- `06_advanced_analytics.sql`
 
-02_customer_analysis.sql
-
-03_product_analysis.sql
-
-04_conversion_analysis.sql
-
-05_time_analysis.sql
-
-06_conversion_analysis.sql
-
-07_business_questions.sql
-
-08_interview_queries.sql
+Table definitions are in `sql/ddl/`. The DML and views folders are reserved for future scripts.
 
 ---
 

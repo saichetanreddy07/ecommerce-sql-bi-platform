@@ -55,7 +55,15 @@ Thumbs.db
 .pytest_cache/
 .mypy_cache/
 
-# Large Raw Dataset
-data/raw/
+# Keep the raw-data directory, but never track downloaded source datasets.
+data/raw/*
+!data/raw/.gitkeep
 
-.env/
+# ----------------------------
+# Build and editor files
+# ----------------------------
+build/
+dist/
+*.egg-info/
+.coverage
+htmlcov/

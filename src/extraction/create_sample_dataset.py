@@ -3,8 +3,9 @@ from pathlib import Path
 import pandas as pd
 
 
-RAW_FILE_PATH = Path("data/raw/2019-Oct.csv")
-OUTPUT_FILE_PATH = Path("data/processed/ecommerce_sample.csv")
+BASE_DIR = Path(__file__).resolve().parents[2]
+RAW_FILE_PATH = BASE_DIR / "data/raw/2019-Oct.csv"
+OUTPUT_FILE_PATH = BASE_DIR / "data/sample/ecommerce_sample.csv"
 
 CHUNK_SIZE = 100_000
 ROWS_PER_DAY = 10_000

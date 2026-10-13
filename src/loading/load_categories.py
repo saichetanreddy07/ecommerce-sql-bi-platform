@@ -18,8 +18,6 @@ def load_categories(df, connection):
 
     cursor = connection.cursor()
     try:
-        
-
         cursor.executemany(insert_query, category_records)
         connection.commit()
         print(f"{len(category_records)} categories inserted.")
