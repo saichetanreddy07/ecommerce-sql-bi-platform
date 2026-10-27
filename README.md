@@ -207,7 +207,6 @@ Counts below are derived from the current repository and included cleaned CSV. D
 | Distinct products / non-null brands | 52,823 / 2,393 |
 | Distinct customers / purchasing customers | 139,048 / 3,558 |
 | Sample purchase events / purchase-event revenue | 4,051 / $1,486,209.46 |
-| DAX measure count | Not independently verified from the PBIX model; not claimed |
 
 ## Future Improvements
 
