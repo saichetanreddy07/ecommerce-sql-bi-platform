@@ -4,7 +4,7 @@
 
 Enterprise SQL Analytics & Business Intelligence Platform
 
-This project demonstrates an end-to-end Business Intelligence workflow using Python, PostgreSQL and Power BI.
+This project demonstrates an end-to-end Business Intelligence workflow using Python, MySQL and Power BI.
 
 The goal is to build a production-inspired analytics pipeline rather than a machine learning project.
 
@@ -13,9 +13,9 @@ The goal is to build a production-inspired analytics pipeline rather than a mach
 # Tech Stack
 
 - Python
-- PostgreSQL
+- MySQL
 - Pandas
-- psycopg2
+- PyMySQL
 - python-dotenv
 - VS Code
 - SQLTools
@@ -117,7 +117,7 @@ Validation
 
 ↓
 
-Load into PostgreSQL
+Load into MySQL
 
 ---
 
@@ -137,7 +137,7 @@ Table definitions are in `sql/ddl/`. The DML and views folders are reserved for 
 
 # SQL Coding Standards
 
-- Use PostgreSQL syntax.
+- Use MySQL syntax.
 - Use meaningful aliases.
 - Use INNER JOIN only when required.
 - Revenue only includes rows where event_type = 'purchase'.

@@ -1,3 +1,6 @@
+import pandas as pd
+
+
 def load_events(df, connection):
     """Load valid event records into the events table."""
     event_columns = [
@@ -12,6 +15,9 @@ def load_events(df, connection):
 
     events_df = df[event_columns].copy()
     events_df = events_df.dropna(subset=event_columns)
+    events_df["event_time"] = pd.to_datetime(
+        events_df["event_time"], utc=True
+    ).dt.tz_localize(None)
 
     event_records = list(
         events_df[event_columns].itertuples(
@@ -36,7 +42,8 @@ def load_events(df, connection):
     cursor = connection.cursor()
 
     try:
-        cursor.executemany(insert_query, event_records)
+        for start in range(0, len(event_records), 5000):
+            cursor.executemany(insert_query, event_records[start:start + 5000])
         connection.commit()
         print(f"{len(event_records)} events inserted.")
     except Exception as error:

@@ -20,7 +20,8 @@ def load_products(df, connection):
     cursor = connection.cursor()
 
     try:
-        cursor.executemany(insert_query, product_records)
+        for start in range(0, len(product_records), 5000):
+            cursor.executemany(insert_query, product_records[start:start + 5000])
         connection.commit()
         print(f"{len(product_records)} products inserted.")
     except Exception as error:

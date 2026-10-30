@@ -1,36 +1,31 @@
 # E-commerce Data Engineering and BI Platform
 
-An end-to-end portfolio project that turns sampled e-commerce event data into a cleaned analytical dataset, a normalized PostgreSQL model, SQL analysis, and a four-page Power BI report.
+An end-to-end data engineering and analytics project that samples e-commerce events, cleans and validates them with Python, loads them into MySQL, analyzes them with SQL, and presents findings in Power BI.
+
+The included dataset is a capped sample of October 2019 activity. Its statistics describe the sample and should not be generalized to the full month.
 
 ## Project Overview
 
-This project demonstrates practical data engineering and analytics work across Python, PostgreSQL, SQL, and Power BI. The included October 2019 extract is sampled to keep local processing manageable; all metrics in the report are explicitly sample-level and are not estimates of the complete source month.
+The pipeline covers:
 
-## Project Objectives
+1. Sampling the source CSV in chunks, with a cap of 10,000 records per event date.
+2. Cleaning timestamps and text values, removing duplicates, and validating data quality.
+3. Loading normalized categories, products, users, and events into MySQL 8.0+.
+4. Answering sales, customer, product, conversion, and time analysis questions with MySQL SQL.
+5. Reporting sample-level findings in a four-page Power BI dashboard.
 
-- Build a repeatable, chunk-based CSV sampling workflow.
-- Clean event records and profile data quality with Python and pandas.
-- Model categories, products, users, and events in PostgreSQL.
-- Answer sales, customer, product, category, conversion, and time-based questions with SQL.
-- Deliver interactive Power BI pages and actionable, evidence-based findings.
+See [architecture](docs/architecture.md), [database design](docs/database_design.md), [data dictionary](docs/data_dictionary.md), and [business insights](reports/business_insights.md).
 
-## Architecture
-
-![Platform architecture](images/architecture.png)
-
-See [architecture details](docs/architecture.md), [database design](docs/database_design.md), and the [data dictionary](docs/data_dictionary.md).
-
-## Tech Stack
+## Technology
 
 | Area | Tools |
 |---|---|
 | Data processing | Python 3.12, pandas, NumPy |
-| Relational storage | PostgreSQL, psycopg2 |
-| Analytics | PostgreSQL SQL |
+| Database | MySQL 8.0+, PyMySQL, InnoDB |
+| Analytics | MySQL SQL, CTEs, window functions |
 | Reporting | Power BI |
-| Notebook exploration | Jupyter |
 | Configuration | python-dotenv |
-| Quality checks | unittest, GitHub Actions |
+| Checks | unittest, GitHub Actions |
 
 ## Dataset
 
@@ -38,120 +33,67 @@ The source is the [eCommerce Behavior Data from Multi Category Store](https://ww
 
 | Artifact | Details |
 |---|---|
-| Raw source | `data/raw/2019-Oct.csv`; 5.67 GB in the local workspace and excluded from Git |
-| Sampling rule | Chunked extraction, capped at 10,000 rows per event date |
-| Sample and cleaned records | 309,967 rows across 31 dates; 10 columns |
-| Cleaned CSV | `data/processed/ecommerce_cleaned.csv`; approximately 45.6 MB |
+| Raw source | `data/raw/2019-Oct.csv` (5.67 GB locally; excluded from Git) |
+| Sampling | Chunked extraction, capped at 10,000 rows per event date |
+| Sample and cleaned data | 309,967 records over 31 dates; 10 columns |
+| Cleaned CSV | `data/processed/ecommerce_cleaned.csv` (approximately 45.6 MB) |
 
-The included sample is not the full source dataset. Monthly totals and daily comparisons must not be generalized to all October traffic. To reproduce the sample, download the CSV from Kaggle and place it at `data/raw/2019-Oct.csv`.
+To reproduce the sample, download the source file from Kaggle and place it at `data/raw/2019-Oct.csv`. The repository's cleaned sample is already available at the path above.
 
-## Folder Structure
+## Repository Layout
 
 ```text
 .
-├── .github/workflows/       # Automated Python checks
-├── dashboards/              # Power BI report
-├── data/
-│   ├── raw/                  # Local source CSV; ignored by Git
-│   ├── sample/               # Capped analytical sample
-│   ├── processed/            # Cleaned dataset
-│   └── validation/           # Generated quality profile
-├── docs/                     # Architecture, schema, dictionary, AI context
-├── images/                   # Dashboard previews and project diagrams
-├── notebooks/                # Initial data-understanding notebook
-├── reports/                  # Business insights
+├── dashboards/       Power BI report
+├── data/             Raw, sampled, processed, and validation data
+├── docs/             Architecture, database design, and data dictionary
+├── images/           Dashboard previews and project diagrams
+├── notebooks/        Data understanding notebook
+├── reports/          Business insights
 ├── sql/
-│   ├── ddl/                  # Database and table definitions
-│   ├── dml/                  # Reserved for data-manipulation scripts
-│   ├── analytics/            # Business questions and analyses
-│   └── views/                # Reserved for analytical views
+│   ├── ddl/           Database and table definitions
+│   └── analytics/     Business analysis queries
 ├── src/
-│   ├── cleaning/
-│   ├── config/
-│   ├── extraction/
-│   ├── loading/
-│   ├── utils/
-│   └── validation/
-├── tests/
-├── .env.example
-├── requirements.txt
-└── README.md
+│   ├── extraction/    Chunked source sampling
+│   ├── cleaning/      Event data cleaning
+│   ├── validation/   Data quality profiling
+│   └── loading/       MySQL connection and table loaders
+└── tests/             Python unit tests
 ```
 
 ## ETL Pipeline
 
-![ETL pipeline](images/etl_pipeline.png)
+![ETL pipeline](<images/ETL Pipeline.png>)
 
-1. **Extract and sample:** `src/extraction/create_sample_dataset.py` reads the raw CSV in 100,000-row chunks, parses timestamps, and caps the sample at 10,000 rows per day. Output: `data/sample/ecommerce_sample.csv`.
-2. **Clean:** `src/cleaning/clean_ecommerce_data.py` removes duplicate rows, drops invalid event timestamps, and trims/lowercases selected text columns while preserving missing brand and category codes. Output: `data/processed/ecommerce_cleaned.csv`.
-3. **Validate:** `src/validation/validate_ecommerce_data.py` writes row/column counts, missingness, duplicate counts, data types, observed event types, records by date, and negative-price counts. Output: `data/validation/validation_report.txt`.
-4. **Load:** `src/loading/` inserts categories, products, users, and events in foreign-key order.
+Run the stages from the repository root:
 
-## PostgreSQL Database
-
-![PostgreSQL schema](images/database_schema.png)
-
-The schema has four tables: `categories` (category identifiers and codes), `products` (product and category), `users` (customer identifiers), and `events` (timestamped customer interactions and price). Foreign keys connect products to categories and events to products and users. See [database design](docs/database_design.md) and [data dictionary](docs/data_dictionary.md).
-
-## SQL Analytics
-
-There are 12 SQL files: 5 DDL scripts and 7 analytics scripts. The analytics files contain 39 numbered business questions plus one exploratory session query. Topics include revenue and average purchase value, customer activity and spending, product/category/brand rankings, event-based funnel ratios, hourly and daily patterns, and window-function analysis (ranking, running totals, moving averages, and `LAG`).
-
-## Power BI Dashboard
-
-Open [`ecommerce_sales_analytics_dashboard.pbix`](dashboards/ecommerce_sales_analytics_dashboard.pbix) in Power BI Desktop. The report has four pages, 48 visual containers, 16 chart visuals, 16 KPI cards, 12 slicers, and 4 page-title text boxes. Each page includes event-date, category, and brand filters.
-
-## Dashboard Pages
-
-**1. Executive Dashboard** - Sample purchase revenue, purchase count, purchasing customers, average purchase value, daily revenue, revenue by category, top brands, and top products.
-
-![Executive dashboard](images/dashboard_1_executive.png)
-
-**2. Customer Insights Dashboard** - Customer and purchasing-customer counts, views, the displayed conversion KPI, daily active customers, event mix, purchase distribution, and leading purchasing customers.
-
-![Customer dashboard](images/dashboard_2_customer.png)
-
-**3. Product and Category Performance** - Product/category/brand coverage, revenue per product rate, daily revenue, category revenue, top brands, and top products.
-
-![Product dashboard](images/dashboard_3_product.png)
-
-**4. Sales Funnel and Conversion Analytics** - View/cart/purchase cards, conversion trend, funnel visual, and category/brand conversion rankings.
-
-![Conversion dashboard](images/dashboard_4_conversion.png)
-
-The conversion measures should be interpreted as event-count ratios unless explicitly defined at the session/customer level. The funnel page's purchase card also needs reconciliation with the source counts; details are documented in the [business insights report](reports/business_insights.md).
-
-## Business Insights
-
-The included sample records $1.486M in purchase-event revenue. Smartphone category revenue is 73.4% of that sample total, Apple represents 60.3%, and 3,558 unique customers made a purchase. The data is capped by date, category codes are missing on 32.8% of event rows, and the funnel visuals use inconsistent purchase labels. See the [18-observation business report](reports/business_insights.md) for impacts, recommendations, and methodology.
-
-## Project Workflow
-
-```text
-Raw Data
-   |
-   v
-Sampling and Cleaning
-   |
-   v
-Validation
-   |
-   v
-PostgreSQL
-   |
-   v
-SQL Analytics
-   |
-   v
-Power BI
-   |
-   v
-Business Insights
+```powershell
+python -m src.extraction.create_sample_dataset
+python -m src.cleaning.clean_ecommerce_data
+python -m src.validation.validate_ecommerce_data
+python -m src.loading.load_all
 ```
 
-## Installation
+The full loader inserts in foreign-key order: **categories → products → users → events**. Loaders use batched `executemany` inserts in batches of 5,000 rows. `event_time` values are converted to naive UTC for storage in MySQL `DATETIME`; the database connection sets its session timezone to UTC.
 
-Requirements: Python 3.12, PostgreSQL, and Power BI Desktop for opening the `.pbix` file.
+## MySQL Schema
+
+![MySQL database schema](<images/Normalized MySQL Schema.png>)
+
+The InnoDB schema contains four tables:
+
+- `categories`: source category identifiers and optional category codes.
+- `products`: source product identifiers, category foreign key, and optional brand.
+- `users`: source customer identifiers.
+- `events`: auto-increment event identifier, UTC event timestamp, event date and type, price, session identifier, product foreign key, and user foreign key.
+
+The database and tables use `utf8mb4`. Prices use `DECIMAL(10,2)`, text fields use bounded `VARCHAR` columns, and the event table has indexes on `event_time`, `event_type`, and its foreign keys. The product table indexes its category foreign key.
+
+## Installation and Database Setup
+
+Requirements: Python 3.12, MySQL 8.0+, and Power BI Desktop to open the `.pbix` report. Ensure the MySQL server is running and the `mysql` command-line client is available.
+
+Create a Python environment and install dependencies:
 
 ```powershell
 py -3.12 -m venv .venv
@@ -160,62 +102,71 @@ python -m pip install -r requirements.txt
 Copy-Item .env.example .env
 ```
 
-Set `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, and `DB_PASSWORD` in the local `.env` file. It is ignored by Git. Create the database and tables from the repository root:
+Set `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, and `DB_PASSWORD` in `.env`. The sample configuration uses port `3306` and database `ecommerce_bi`. `.env` is ignored by Git.
 
-```bash
-psql -d postgres -f sql/ddl/create_database.sql
-psql -d ecommerce_bi -f sql/ddl/create_categories.sql
-psql -d ecommerce_bi -f sql/ddl/create_products.sql
-psql -d ecommerce_bi -f sql/ddl/create_users.sql
-psql -d ecommerce_bi -f sql/ddl/create_events.sql
+Create the database and tables from the repository root. Enter your MySQL password when prompted:
+
+```powershell
+Get-Content sql/ddl/create_database.sql | mysql -u root -p
+Get-Content sql/ddl/create_categories.sql | mysql -u root -p ecommerce_bi
+Get-Content sql/ddl/create_products.sql | mysql -u root -p ecommerce_bi
+Get-Content sql/ddl/create_users.sql | mysql -u root -p ecommerce_bi
+Get-Content sql/ddl/create_events.sql | mysql -u root -p ecommerce_bi
 ```
 
-## Usage
+Then load the cleaned sample:
 
-Run commands from the repository root. Place the Kaggle file in `data/raw/` before sampling.
-
-```bash
-python -m src.extraction.create_sample_dataset
-python -m src.cleaning.clean_ecommerce_data
-python -m src.validation.validate_ecommerce_data
+```powershell
 python -m src.loading.load_all
-python -m unittest discover -s tests -v
 ```
 
-The notebook `notebooks/01_data_understanding.ipynb` previews the raw data. The database loading command requires a reachable PostgreSQL server and valid local credentials.
+The loader expects `data/processed/ecommerce_cleaned.csv` and a reachable MySQL server with credentials matching `.env`.
 
-## Resume Highlights
+## SQL Analytics
 
-Counts below are derived from the current repository and included cleaned CSV. Dataset statistics describe the capped sample, not the full source month.
+The `sql/analytics/` directory contains seven analysis scripts and an exploratory session query. The queries cover purchase revenue, customer activity, product and category performance, event-count funnel ratios, time trends, rankings, running totals, moving averages, and `LAG`. Funnel rates are event-count ratios unless a query explicitly defines a session or customer grain. Ratio calculations use decimal operands to avoid integer division.
 
-| Measure | Verified value |
+## Power BI
+
+Open [the dashboard](dashboards/ecommerce_sales_analytics_dashboard.pbix) in Power BI Desktop. It contains four pages, 48 visual containers (16 charts, 16 KPI cards, 12 slicers, and 4 page-title text boxes), with event-date, category, and brand filters.
+
+After migrating the database, reconnect the report's data source to MySQL and validate its measures. The funnel page's purchase card requires reconciliation with the source counts; see the [business insights report](reports/business_insights.md).
+
+## Sample Checks
+
+After loading, compare database results with these sample-level values:
+
+| Measure | Expected value |
 |---|---:|
-| Python source scripts | 9 |
-| Reusable Python function definitions in `src/` | 18 |
-| Core pipeline entry points | 4 (sample, clean, validate, load) |
-| SQL scripts | 12 |
-| Numbered analytical questions plus session query | 40 |
-| PostgreSQL tables | 4 |
-| Power BI reports / pages | 1 / 4 |
-| Power BI visuals | 48 total: 16 charts, 16 KPI cards, 12 slicers, 4 titles |
-| Diagnostic groups in the validation report | 6 |
-| Business insights in the report | 18 |
-| Sampled, cleaned event records | 309,967 |
-| Cleaned CSV size | 45.6 MB |
-| Raw CSV size in the local workspace | 5.67 GB; excluded from Git |
-| Distinct category IDs / non-null category codes | 602 / 126 |
-| Distinct products / non-null brands | 52,823 / 2,393 |
-| Distinct customers / purchasing customers | 139,048 / 3,558 |
-| Sample purchase events / purchase-event revenue | 4,051 / $1,486,209.46 |
+| Events | 309,967 |
+| Users | 139,048 |
+| Products | 52,823 |
+| Purchase revenue | $1,486,209.46 |
+| Purchasing customers | 3,558 |
+
+Other sample facts include 4,051 purchase events, 602 distinct category IDs, 126 non-null category codes, and 2,393 non-null brands. Category-code values are missing for 32.8% of event rows. These metrics describe only the capped sample.
+
+## Verification
+
+Run the Python unit tests and compile the source modules:
+
+```powershell
+python -m unittest discover -s tests -v
+python -m compileall src
+```
+
+SQL execution also requires a running MySQL 8.0+ server with the schema loaded.
+
+## Manual Migration Follow-up
+
+- Current diagram exports are `images/architecture.png`, `images/ETL Pipeline.png`, and `images/Normalized MySQL Schema.png`. Review and regenerate them when the architecture, pipeline, or schema changes.
+- Reconnect and validate the Power BI report against MySQL.
+- Update any resume or portfolio material that still identifies PostgreSQL as the database.
 
 ## Future Improvements
 
-- Define session-based funnel and cart-abandonment measures, then reconcile all report-page KPI definitions.
+- Define session-based funnel and cart-abandonment measures consistently across Power BI and SQL.
 - Improve category-code and brand coverage with documented unknown-value handling.
-- Add automated schema and business-rule assertions to validation.
-- Make loading idempotent and transactional, then add database integration tests.
+- Add schema and business-rule assertions to validation.
+- Make database loading idempotent and add MySQL integration tests.
 - Add incremental ingestion, orchestration, and monitoring for production-scale data.
-
-## Author
-
-Maintained as an individual data engineering and business intelligence portfolio project by the owner of the GitHub repository.

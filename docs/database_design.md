@@ -1,6 +1,6 @@
 # Database Design
 
-![PostgreSQL entity relationships](../images/database_schema.png)
+![MySQL entity relationships](../images/database_schema.png)
 
 The schema separates product categories, products, users, and event facts. It is defined by the SQL scripts in `sql/ddl/` and supports the analytical queries in `sql/analytics/`.
 

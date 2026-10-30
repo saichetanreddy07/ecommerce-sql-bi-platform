@@ -19,7 +19,8 @@ def load_users(df, connection):
     cursor = connection.cursor()
 
     try:
-        cursor.executemany(insert_query, user_records)
+        for start in range(0, len(user_records), 5000):
+            cursor.executemany(insert_query, user_records[start:start + 5000])
         connection.commit()
         print(f"{len(user_records)} users inserted.")
     except Exception as error:

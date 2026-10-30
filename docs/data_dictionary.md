@@ -1,6 +1,6 @@
 # Data Dictionary
 
-The source dataset contains e-commerce interaction events. The normalized PostgreSQL schema is defined in `sql/ddl/`.
+The source dataset contains e-commerce interaction events. The normalized MySQL schema is defined in `sql/ddl/`.
 
 ## Cleaned Event Dataset
 
@@ -21,34 +21,34 @@ The source dataset contains e-commerce interaction events. The normalized Postgr
 
 ## categories
 
-| Column | PostgreSQL type | Constraints | Description |
+| Column | MySQL type | Constraints | Description |
 |---|---|---|---|
 | `category_id` | BIGINT | Primary key | Source category identifier. |
-| `category_code` | TEXT | Nullable | Hierarchical product category code. |
+| `category_code` | VARCHAR(255) | Nullable | Hierarchical product category code. |
 
 ## products
 
-| Column | PostgreSQL type | Constraints | Description |
+| Column | MySQL type | Constraints | Description |
 |---|---|---|---|
 | `product_id` | INT | Primary key | Source product identifier. |
 | `category_id` | BIGINT | Not null, foreign key | Category associated with the product. |
-| `brand` | TEXT | Nullable | Product brand. |
+| `brand` | VARCHAR(255) | Nullable | Product brand. |
 
 ## users
 
-| Column | PostgreSQL type | Constraints | Description |
+| Column | MySQL type | Constraints | Description |
 |---|---|---|---|
 | `user_id` | BIGINT | Primary key | Source customer identifier. |
 
 ## events
 
-| Column | PostgreSQL type | Constraints | Description |
+| Column | MySQL type | Constraints | Description |
 |---|---|---|---|
-| `event_id` | BIGSERIAL | Primary key | Database-generated event identifier. |
-| `event_time` | TIMESTAMP | Not null | Timestamp of the customer interaction. |
+| `event_id` | BIGINT AUTO_INCREMENT | Primary key | Database-generated event identifier. |
+| `event_time` | DATETIME (UTC) | Not null | UTC timestamp of the customer interaction. |
 | `event_date` | DATE | Not null | Calendar date derived from the interaction timestamp. |
-| `event_type` | TEXT | Not null | Interaction type, such as view, cart, or purchase. |
-| `price` | NUMERIC(10, 2) | Not null | Recorded product price for the event. |
-| `user_session` | UUID | Not null | Session identifier from the source data. |
+| `event_type` | VARCHAR(100) | Not null | Interaction type, such as view, cart, or purchase. |
+| `price` | DECIMAL(10, 2) | Not null | Recorded product price for the event. |
+| `user_session` | CHAR(36) | Not null | Session identifier from the source data. |
 | `product_id` | INT | Not null, foreign key | Product associated with the event. |
 | `user_id` | BIGINT | Not null, foreign key | Customer associated with the event. |

@@ -18,7 +18,8 @@ def load_categories(df, connection):
 
     cursor = connection.cursor()
     try:
-        cursor.executemany(insert_query, category_records)
+        for start in range(0, len(category_records), 5000):
+            cursor.executemany(insert_query, category_records[start:start + 5000])
         connection.commit()
         print(f"{len(category_records)} categories inserted.")
     except Exception as error:

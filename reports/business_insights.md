@@ -193,6 +193,6 @@ The sampled funnel contains 301,166 view events, 4,750 cart events, and 4,051 pu
 ## Future Improvements
 
 - Replace diagnostic-only data profiling with explicit assertions for required columns, allowed event types, timestamp validity, and referential integrity.
-- Make database loads idempotent and transactional, and add PostgreSQL integration tests.
+- Make database loads idempotent and transactional, and add MySQL integration tests.
 - Publish reproducible query outputs alongside the dashboard definitions.
 - Add incremental ingestion, orchestration, and data-quality monitoring for production-scale data.
