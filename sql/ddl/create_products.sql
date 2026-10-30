@@ -2,6 +2,6 @@
 CREATE TABLE products (
     product_id INT PRIMARY KEY,
     category_id BIGINT NOT NULL,
-    brand TEXT,
+    brand VARCHAR(255),
     FOREIGN KEY (category_id) REFERENCES categories(category_id)
 );
