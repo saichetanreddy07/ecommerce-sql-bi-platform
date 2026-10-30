@@ -1,21 +1,13 @@
 -- 1. How do brands rank by total revenue?
-WITH brand_revenue AS (
-    SELECT
-        p.brand,
-        SUM(e.price) AS total_revenue
-    FROM events AS e
-    INNER JOIN products AS p
-        ON e.product_id = p.product_id
-    WHERE e.event_type = 'purchase'
-    GROUP BY p.brand
-)
 SELECT
-    br.brand,
-    br.total_revenue,
-    RANK() OVER (
-        ORDER BY br.total_revenue DESC
-    ) AS revenue_rank
-FROM brand_revenue AS br
+    p.brand,
+    SUM(e.price) AS total_revenue,
+    RANK() OVER (ORDER BY SUM(e.price) DESC) AS revenue_rank
+FROM events e
+JOIN products p
+    ON e.product_id = p.product_id
+WHERE e.event_type = 'purchase'
+GROUP BY p.brand
 ORDER BY revenue_rank;
 
 -- 2. What are the top 3 products in every category?
@@ -119,63 +111,42 @@ FROM daily_revenue AS dr
 ORDER BY dr.event_date;
 
 -- 6. How does each customer rank based on total spending?
-WITH customer_spending AS (
-    SELECT
-        e.user_id,
-        SUM(e.price) AS total_spending
-    FROM events AS e
-    WHERE e.event_type = 'purchase'
-    GROUP BY e.user_id
-)
 SELECT
-    cs.user_id,
-    cs.total_spending,
-    RANK() OVER (
-        ORDER BY cs.total_spending DESC
-    ) AS spending_rank
-FROM customer_spending AS cs
+    e.user_id,
+    SUM(e.price) AS total_spending,
+    RANK() OVER (ORDER BY SUM(e.price) DESC) AS spending_rank
+FROM events e
+WHERE e.event_type = 'purchase'
+GROUP BY e.user_id
 ORDER BY spending_rank;
 
 -- 7. What percentage of total revenue does each brand contribute?
-WITH brand_revenue AS (
-    SELECT
-        p.brand,
-        SUM(e.price) AS total_revenue
-    FROM events AS e
-    INNER JOIN products AS p
-        ON e.product_id = p.product_id
-    WHERE e.event_type = 'purchase'
-    GROUP BY p.brand
-)
 SELECT
-    br.brand,
-    br.total_revenue,
+    p.brand,
+    SUM(e.price) AS total_revenue,
     ROUND(
-        br.total_revenue * 100.0 / SUM(br.total_revenue) OVER (),
+        SUM(e.price) * 100.0 /
+        SUM(SUM(e.price)) OVER (),
         2
     ) AS revenue_contribution_percentage
-FROM brand_revenue AS br
+FROM events e
+JOIN products p
+    ON e.product_id = p.product_id
+WHERE e.event_type = 'purchase'
+GROUP BY p.brand
 ORDER BY revenue_contribution_percentage DESC;
 
 -- 8. Which customers spent more than the average customer spending?
 WITH customer_spending AS (
     SELECT
-        e.user_id,
-        SUM(e.price) AS total_spending
-    FROM events AS e
-    WHERE e.event_type = 'purchase'
-    GROUP BY e.user_id
-),
-average_customer_spending AS (
-    SELECT
-        AVG(cs.total_spending) AS average_spending
-    FROM customer_spending AS cs
+        user_id,
+        SUM(price) AS total_spending
+    FROM events
+    WHERE event_type = 'purchase'
+    GROUP BY user_id
 )
-SELECT
-    cs.user_id,
-    cs.total_spending,
-    acs.average_spending
-FROM customer_spending AS cs
-CROSS JOIN average_customer_spending AS acs
-WHERE cs.total_spending > acs.average_spending
-ORDER BY cs.total_spending DESC;
+SELECT *
+FROM customer_spending
+WHERE total_spending >
+      (SELECT AVG(total_spending) FROM customer_spending)
+ORDER BY total_spending DESC;
